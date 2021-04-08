@@ -229,9 +229,6 @@ The following links provide further useful related information</p>
 <p><a href="http://www.babelcolor.com/download/A%20review%20of%20RGB%20color%20spaces.pdf" rel="nofollow">http://www.babelcolor.com/download/A%20review%20of%20RGB%20color%20spaces.pdf</a></p>
 </article>
   </div>
-
-    </div>
-
   </body>
 </html>
 
