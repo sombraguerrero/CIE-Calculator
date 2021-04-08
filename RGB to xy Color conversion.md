@@ -23,9 +23,7 @@
     
 
 
-  <meta name="viewport" content="width=device-width">
-  
-  <title>PhilipsHueSDK-iOS-OSX/RGB to xy Color conversion.md at 00187a3db88dedd640f5ddfa8a474458dff4e1db · PhilipsHue/PhilipsHueSDK-iOS-OSX</title>
+  <meta name="viewport" content="width=device-width"?
 
   </head>
 
