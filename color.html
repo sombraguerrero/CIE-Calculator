@@ -1,0 +1,59 @@
+<html><header><title>My Color Page</title>
+<script>
+function calculateCIE(pickerVal) {
+
+	//Credit to Andreas Zettl (https://azettl.net/) for the hex to RGB conversion.
+	var aRgbHex = pickerVal.substring(1).match(/.{1,2}/g);
+	var aRgb = [
+    parseInt(aRgbHex[0], 16),
+    parseInt(aRgbHex[1], 16),
+    parseInt(aRgbHex[2], 16)
+	];
+	
+	//Convert each color channel into a value between 0 and 1
+	var selectedRed = aRgb[0] / 255.00;
+    var selectedGreen = aRgb[1] / 255.00;
+    var selectedBlue = aRgb[2] / 255.00;
+	
+	//Apply a gamma correction to each color channel value to account for difference of appearance on-screen versus from the actual light.
+    var gammaRed = (selectedRed > 0.04045) ? Math.pow((selectedRed + 0.055) / 1.055, 2.4) : (selectedRed / 12.92);
+    var gammaGreen = (selectedGreen > 0.04045) ? Math.pow((selectedGreen + 0.055) / 1.055, 2.4) : (selectedGreen / 12.92);
+    var gammaBlue = (selectedBlue > 0.04045) ? Math.pow((selectedBlue + 0.055) / 1.055, 2.4) : (selectedBlue / 12.92);
+	
+	//Use the gamma-corrected values to calculate the intermediate XYZ values.
+    var X = gammaRed * 0.649926 + gammaGreen * 0.103455 + gammaBlue * 0.197109;
+    var Brightness = gammaRed * 0.234327 + gammaGreen * 0.743075 + gammaBlue * 0.022598;
+    var Z = gammaRed * 0.0000000 + gammaGreen * 0.053077 + gammaBlue * 1.035763;
+	
+	var LightObject = {
+		xy: [(X / (X + Brightness + Z)), (Brightness / (X + Brightness + Z))],
+		bri: Math.floor(Brightness * 254),
+		on: true
+	}
+	return JSON.stringify(LightObject);
+}
+
+function calcColorValues(pickerVal) {
+	document.getElementById("hexStr").innerHTML = pickerVal.substring(1);
+	document.getElementById("decStr").innerHTML = parseInt(pickerVal.substring(1), 16).toString();
+	
+	var colorRequest = new XMLHttpRequest();
+	colorRequest.open("PUT", "{{ip}}/api/{{token}}/lights/7/state", true);
+	colorRequest.onreadystatechange = function() {
+		if (this.readyState == 4 && this.status == 200) {
+			document.getElementById("lightObjStr").innerHTML = this.responseText;
+		}
+	};
+	colorRequest.setRequestHeader("Content-Type", "application/json");
+	colorRequest.send(calculateCIE(pickerVal));
+}
+</script>
+</head>
+
+<body>
+Choose a color: <input type="color" id="myColor" onChange="calcColorValues(document.getElementById('myColor').value)"/>
+<br clear=all />Hex Value: <span id="hexStr"></span>
+<br clear=all />Decimal Literal: <span id="decStr"></span>
+<br clear=all />Phillips JSON: <span id="lightObjStr"></span>
+</body>
+</html>
